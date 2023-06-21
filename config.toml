@@ -1,0 +1,21 @@
+[account]
+login_id = "auto-yours@example.com"
+password = "PASSWORD"
+customer_id = "C0012345"
+customer_company_name = "インターネットグループ"
+customer_name = "東京 花子"
+customer_email = "auto-yours@example.com"
+
+[setups]
+service_id = "S001"
+service_menu_id = "S0000063"
+next_monday1 = 1230
+next_tuesday1 = 0
+next_wednesday1 = 1230
+next_thursday1 = 0
+next_friday1 = 1230
+next_monday2 = 1230
+next_tuesday2 = 0
+next_wednesday2 = 1230
+next_thursday2 = 0
+next_friday2 = 0
