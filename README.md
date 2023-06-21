@@ -23,7 +23,7 @@ For people who want to deploy this tool as a cron job.
 ```bash
 mkdir autoyours && cd autoyours
 
-wget https://github.com/owner203/autoyours/releases/download/latest/autoyours.jar
+wget https://github.com/owner203/autoyours/releases/latest/download/autoyours.jar
 
 vi config.toml
 
