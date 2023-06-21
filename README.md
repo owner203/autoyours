@@ -27,7 +27,7 @@ wget https://github.com/owner203/autoyours/releases/download/latest/autoyours.ja
 
 vi config.toml
 
-(crontab -l 2>/dev/null; echo "1 12 * * 5 java -jar $PWD/autoyours.jar") | crontab -
+(crontab -l 2>/dev/null; echo "1 12 * * 5 cd $PWD && java -jar $PWD/autoyours.jar") | crontab -
 ```
 
 ## How to build
