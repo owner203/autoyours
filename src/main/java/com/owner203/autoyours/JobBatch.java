@@ -201,10 +201,10 @@ public class JobBatch {
     private int accountLogin() {
         System.out.println("[accountLogin]Begin");
         URI uri = UriComponentsBuilder.fromUriString("https://gmoyours.dt-r.com/customer/ajaxLogin.php")
-                                            .queryParam("action", "login")
-                                            .queryParam("login_id", config.account.login_id)
-                                            .queryParam("password", config.account.password)
-                                            .build().encode().toUri();
+                                      .queryParam("action", "login")
+                                      .queryParam("login_id", config.account.login_id)
+                                      .queryParam("password", config.account.password)
+                                      .build().encode().toUri();
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set("Accept", "*/*");
@@ -224,7 +224,7 @@ public class JobBatch {
             System.out.println("[accountLogin]End");
             return 1;
         }
-        
+
         if (responseBody.equals("1")) {
             System.out.println("Login succeeded.");
             System.out.println(cookie);
@@ -240,19 +240,19 @@ public class JobBatch {
     private int bookingRequest(long start_unixtime) {
         System.out.println("[bookingRequest]Begin");
         URI uri = UriComponentsBuilder.fromUriString("https://gmoyours.dt-r.com/reservation/ajaxBooking.php")
-                                            .queryParam("action", "regist")
-                                            .queryParam("booking_data[calendar_id]", config.setups.service_id + "." + config.setups.service_menu_id + ".." + String.valueOf(start_unixtime) + "." + String.valueOf(start_unixtime + 1800))
-                                            .queryParam("booking_data[service_id]", config.setups.service_id)
-                                            .queryParam("booking_data[service_menu_id]", config.setups.service_menu_id)
-                                            .queryParam("booking_data[start_unixtime]", String.valueOf(start_unixtime))
-                                            .queryParam("booking_data[end_unixtime]", String.valueOf(start_unixtime + 1800))
-                                            .queryParam("booking_data[num]", String.valueOf(1))
-                                            .queryParam("booking_data[customer_id]", config.account.customer_id)
-                                            .queryParam("booking_data[customer_company_name]", config.account.customer_company_name)
-                                            .queryParam("booking_data[customer_name]", config.account.customer_name)
-                                            .queryParam("booking_data[customer_email]", config.account.customer_email)
-                                            .queryParam("confirm", String.valueOf(1))
-                                            .build().encode().toUri();
+                                      .queryParam("action", "regist")
+                                      .queryParam("booking_data[calendar_id]", config.setups.service_id + "." + config.setups.service_menu_id + ".." + String.valueOf(start_unixtime) + "." + String.valueOf(start_unixtime + 1800))
+                                      .queryParam("booking_data[service_id]", config.setups.service_id)
+                                      .queryParam("booking_data[service_menu_id]", config.setups.service_menu_id)
+                                      .queryParam("booking_data[start_unixtime]", String.valueOf(start_unixtime))
+                                      .queryParam("booking_data[end_unixtime]", String.valueOf(start_unixtime + 1800))
+                                      .queryParam("booking_data[num]", String.valueOf(1))
+                                      .queryParam("booking_data[customer_id]", config.account.customer_id)
+                                      .queryParam("booking_data[customer_company_name]", config.account.customer_company_name)
+                                      .queryParam("booking_data[customer_name]", config.account.customer_name)
+                                      .queryParam("booking_data[customer_email]", config.account.customer_email)
+                                      .queryParam("confirm", String.valueOf(1))
+                                      .build().encode().toUri();
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set("Accept", "*/*");
@@ -279,7 +279,7 @@ public class JobBatch {
     private int bookingList() {
         System.out.println("[bookingList]Begin");
         URI uri = UriComponentsBuilder.fromUriString("https://gmoyours.dt-r.com/customer/reservation/ajaxViewList.php")
-                                            .build().encode().toUri();
+                                      .build().encode().toUri();
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set("Accept", "*/*");
