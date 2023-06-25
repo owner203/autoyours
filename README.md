@@ -18,7 +18,7 @@ source ~/.bashrc
 
 ## How to deploy
 
-For people who want to deploy this tool as a cron job.
+Deploy this tool as a cron job.
 
 ```bash
 mkdir autoyours && cd autoyours
@@ -27,12 +27,12 @@ wget https://github.com/owner203/autoyours/releases/latest/download/autoyours.ja
 
 vi config.toml
 
-(crontab -l 2>/dev/null; echo "1 12 * * 5 cd $PWD && java -jar $PWD/autoyours.jar") | crontab -
+(crontab -l 2>/dev/null; echo "1 12 * * 5 cd $PWD && java -jar autoyours.jar >> ~/autoyours.log 2>&1") | crontab -
 ```
 
 ## How to build
 
-For people who want to compile this tool by themselves.
+You can build this tool by yourself.
 
 ```bash
 git clone https://github.com/owner203/autoyours.git && cd autoyours
@@ -50,28 +50,30 @@ chmod +x ./autoyours
 
 ## About config.toml
 
-You need a config.toml file before running.
+You need a config.toml file exists in the current directory before running.
+
+Here is an example whose name is `東京 花子`, booking a menu in `セルリアン`, at `12:30-13:00 next Monday`, `12:00-12:30 next Tuesday`, `13:00-13:30 next Wednesday`, `12:15-12:45 on Tuesday in two weeks`, and `13:15-13:45 on Wednesday in two weeks`.
 
 ```toml
 [account]
-login_id = "auto-yours@example.com"
-password = "PASSWORD"
-customer_id = "C0012345" # Set your own customer ID here.
-customer_company_name = "インターネットグループ"
-customer_name = "東京 花子"
-customer_email = "auto-yours@example.com"
+login_id = "hanako-tokyo@autoyours.jp"       # Set your login ID (= email address in the most cases) here.
+password = "PASSWORD"                        # Set your password here.
+customer_id = "C0012345"                     # Set your own customer ID here.
+customer_company_name = "オートヨアーズ"       # Set your company name here.
+customer_name = "東京 花子"                   # Set your name (Kanji) here.
+customer_email = "hanako-tokyo@autoyours.jp" # Set your email address here.
 
 [setups]
-service_id = "S001" # 東京(S001)
+service_id = "S001"          # 東京(S001)
 service_menu_id = "S0000063" # セルリアン(S0000063) フクラス(S0000064)
-next_monday1 = 1230 # Starting time here. (1200/1215/1230/1245/1300/1315/0)
-next_tuesday1 = 0 # 0 means no reservations on this day.
-next_wednesday1 = 1230
-next_thursday1 = 0
-next_friday1 = 1230 
-next_monday2 = 1230 # The Monday after next. (1200/1215/1230/1245/1300/1315/0)
-next_tuesday2 = 0
-next_wednesday2 = 1230
-next_thursday2 = 0
-next_friday2 = 0
+next_monday1 = 1230          # Next Monday
+next_tuesday1 = 1200         # Next Tuesday
+next_wednesday1 = 1300       # Next Wednesday
+next_thursday1 = 0           # Next Thursday
+next_friday1 = 0             # Next Friday
+next_monday2 = 0             # Monday in two weeks
+next_tuesday2 = 1215         # Tuesday in two weeks
+next_wednesday2 = 1315       # Wednesday in two weeks
+next_thursday2 = 0           # Thursday in two weeks
+next_friday2 = 0             # Friday in two weeks
 ```
