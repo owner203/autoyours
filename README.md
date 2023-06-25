@@ -18,7 +18,7 @@ source ~/.bashrc
 
 ## How to deploy
 
-For people who want to deploy this tool as a cron job.
+Deploy this tool as a cron job.
 
 ```bash
 mkdir autoyours && cd autoyours
@@ -27,12 +27,12 @@ wget https://github.com/owner203/autoyours/releases/latest/download/autoyours.ja
 
 vi config.toml
 
-(crontab -l 2>/dev/null; echo "1 12 * * 5 cd $PWD && java -jar $PWD/autoyours.jar") | crontab -
+(crontab -l 2>/dev/null; echo "1 12 * * 5 cd $PWD && java -jar autoyours.jar >> ~/autoyours.log 2>&1") | crontab -
 ```
 
 ## How to build
 
-For people who want to compile this tool by themselves.
+You can build this tool by yourself.
 
 ```bash
 git clone https://github.com/owner203/autoyours.git && cd autoyours
@@ -52,7 +52,7 @@ chmod +x ./autoyours
 
 You need a config.toml file exists in the current directory before running.
 
-Here is an example whose name is "東京 花子", booking a menu in "セルリアン", at 12:30-13:00 next Monday, 12:00-12:30 next Tuesday, 13:00-13:30 next Wednesday, 12:15-12:45 on Tuesday in two weeks, and 13:15-13:45 on Wednesday in two weeks.
+Here is an example whose name is `東京 花子`, booking a menu in `セルリアン`, at `12:30-13:00 next Monday`, `12:00-12:30 next Tuesday`, `13:00-13:30 next Wednesday`, `12:15-12:45 on Tuesday in two weeks`, and `13:15-13:45 on Wednesday in two weeks`.
 
 ```toml
 [account]
