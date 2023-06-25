@@ -31,16 +31,37 @@ public class JobBatch {
 
     public int execute() {
         if (configLoad() != 0) return 1;
+
         if (todoGenerate() != 0) return 1;
+
         if (accountLogin() != 0) return 1;
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            System.out.println("Unexpected error.");
+            return 1;
+        }
+
         for (long start_unixtime : todo) {
-            if (bookingRequest(start_unixtime) != 0) return 1;
+            int count = 0;
+            while (bookingRequest(start_unixtime) != 0 && count <5) {
+                count = count + 1;
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    System.out.println("Unexpected error.");
+                    return 1;
+                }
+            }
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
-                ex.printStackTrace();
+                System.out.println("Unexpected error.");
+                return 1;
             }
+            if (count == 5) return 1;
         }
+
         if (bookingList() != 0) return 1;
         return 0;
     }
