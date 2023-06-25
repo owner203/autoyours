@@ -225,7 +225,11 @@ public class JobBatch {
             return 1;
         }
 
-        if (responseBody.equals("1")) {
+        if (Objects.isNull(responseBody)) {
+            System.out.println("Unexpected response.");
+            System.out.println("[accountLogin]End");
+            return 1;
+        } else if (responseBody.equals("1")) {
             System.out.println("Login succeeded.");
             System.out.println(cookie);
             System.out.println("[accountLogin]End");
