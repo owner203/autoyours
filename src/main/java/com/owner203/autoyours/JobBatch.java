@@ -46,11 +46,24 @@ public class JobBatch {
     private String cookie;
 
     public int execute() {
-        if (configLoad() != 0) return 1;
+        int count = 0;
 
-        if (todoGenerate() != 0) return 1;
+        if (configLoad() != 0) return 1; // bad config file
 
-        if (accountLogin() != 0) return 1;
+        if (todoGenerate() != 0) return 1; // null todo list
+
+        count = 0;
+        while (accountLogin() != 0 && count <5) {
+            System.out.println("Retrying...");
+            count = count + 1;
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ex) {
+                System.out.println("Unexpected error.");
+                return 1;
+            }
+        }
+        if (count == 5) return 1; // login failed
         try {
             Thread.sleep(1000);
         } catch (InterruptedException ex) {
@@ -59,26 +72,39 @@ public class JobBatch {
         }
 
         for (long start_unixtime : todo) {
-            int count = 0;
+            count = 0;
             while (bookingRequest(start_unixtime) != 0 && count <5) {
+                System.out.println("Retrying...");
                 count = count + 1;
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(5000);
                 } catch (InterruptedException ex) {
                     System.out.println("Unexpected error.");
                     return 1;
                 }
             }
+            if (count == 5) return 1; // booking request failed
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 System.out.println("Unexpected error.");
                 return 1;
             }
-            if (count == 5) return 1;
         }
 
-        if (bookingList() != 0) return 1;
+        count = 0;
+        while (bookingList() != 0 && count <5) {
+            System.out.println("Retrying...");
+            count = count + 1;
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException ex) {
+                System.out.println("Unexpected error.");
+                return 1;
+            }
+        }
+        if (count == 5) return 1; // booking list up failed
+
         return 0;
     }
 
@@ -88,7 +114,6 @@ public class JobBatch {
         try {
             config = new Toml().read(configFile).to(Config.class);
         } catch (Exception ex) {
-            // bad config file
             System.out.println("Bad config file.");
             System.out.println("[configLoad]End");
             return 1;

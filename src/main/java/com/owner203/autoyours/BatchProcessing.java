@@ -28,14 +28,11 @@ public class BatchProcessing {
 
     @Scheduled(initialDelay = 1000, fixedDelay = 86400000)
     public void runJobBatch() {
-        int count = 0;
-        while (jobBatch.execute() != 0 && count <5) {
-            count = count + 1;
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
-            }
+        System.out.println("[runJobBatch]Start");
+        if (jobBatch.execute() != 0) {
+            System.out.println("[runJobBatch]Failed");
+        } else {
+            System.out.println("[runJobBatch]Succeed");
         }
         AutoyoursApplication.getContext().close();
     }
