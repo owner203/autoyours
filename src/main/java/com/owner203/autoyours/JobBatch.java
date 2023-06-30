@@ -30,7 +30,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.UnknownHttpStatusCodeException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.moandjiezana.toml.Toml;
@@ -263,41 +265,51 @@ public class JobBatch {
     private int accountLogin() {
         System.out.println("[accountLogin]Begin");
         URI uri = UriComponentsBuilder.fromUriString("https://gmoyours.dt-r.com/customer/ajaxLogin.php")
-                                      .queryParam("action", "login")
-                                      .queryParam("login_id", config.account.login_id)
-                                      .queryParam("password", config.account.password)
-                                      .build().encode().toUri();
+            .queryParam("action", "login")
+            .queryParam("login_id", config.account.login_id)
+            .queryParam("password", config.account.password)
+            .build().encode().toUri();
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set("Accept", "*/*");
         requestHeaders.set("User-Agent", "Thunder Client (https://www.thunderclient.com)");
 
         HttpEntity<Void> requestEntity = new HttpEntity<Void>(requestHeaders);
-        ResponseEntity<String> responseEntity = new RestTemplate().exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        try {
+            ResponseEntity<String> responseEntity = new RestTemplate().exchange(uri, HttpMethod.POST, requestEntity, String.class);
 
-        HttpHeaders responseHeaders;
-        String responseBody = "";
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            responseHeaders = responseEntity.getHeaders();
-            cookie = responseHeaders.getFirst(HttpHeaders.SET_COOKIE);
-            responseBody = responseEntity.getBody();
-        } else {
-            System.out.println(String.format("Error HTTP status. (%s)", responseEntity.getStatusCode().toString()));
+            HttpHeaders responseHeaders;
+            String responseBody = "";
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                responseHeaders = responseEntity.getHeaders();
+                cookie = responseHeaders.getFirst(HttpHeaders.SET_COOKIE);
+                responseBody = responseEntity.getBody();
+            } else {
+                System.out.println(String.format("Error HTTP status. (%s)", responseEntity.getStatusCode().toString()));
+                System.out.println("[accountLogin]End");
+                return 1;
+            }
+
+            if (Objects.isNull(responseBody)) {
+                System.out.println("Unexpected response.");
+                System.out.println("[accountLogin]End");
+                return 1;
+            } else if (responseBody.equals("1")) {
+                System.out.println("Login succeeded.");
+                System.out.println(cookie);
+                System.out.println("[accountLogin]End");
+                return 0;
+            } else {
+                System.out.println("Login failed.");
+                System.out.println("[accountLogin]End");
+                return 1;
+            }
+        } catch (ResourceAccessException ex) {
+            System.out.println("Error server access.");
             System.out.println("[accountLogin]End");
             return 1;
-        }
-
-        if (Objects.isNull(responseBody)) {
-            System.out.println("Unexpected response.");
-            System.out.println("[accountLogin]End");
-            return 1;
-        } else if (responseBody.equals("1")) {
-            System.out.println("Login succeeded.");
-            System.out.println(cookie);
-            System.out.println("[accountLogin]End");
-            return 0;
-        } else {
-            System.out.println("Login failed.");
+        } catch (UnknownHttpStatusCodeException ex) {
+            System.out.println("Unknown HTTP status code.");
             System.out.println("[accountLogin]End");
             return 1;
         }
@@ -306,19 +318,19 @@ public class JobBatch {
     private int bookingRequest(long start_unixtime) {
         System.out.println("[bookingRequest]Begin");
         URI uri = UriComponentsBuilder.fromUriString("https://gmoyours.dt-r.com/reservation/ajaxBooking.php")
-                                      .queryParam("action", "regist")
-                                      .queryParam("booking_data[calendar_id]", config.setups.service_id + "." + config.setups.service_menu_id + ".." + String.valueOf(start_unixtime) + "." + String.valueOf(start_unixtime + 1800))
-                                      .queryParam("booking_data[service_id]", config.setups.service_id)
-                                      .queryParam("booking_data[service_menu_id]", config.setups.service_menu_id)
-                                      .queryParam("booking_data[start_unixtime]", String.valueOf(start_unixtime))
-                                      .queryParam("booking_data[end_unixtime]", String.valueOf(start_unixtime + 1800))
-                                      .queryParam("booking_data[num]", String.valueOf(1))
-                                      .queryParam("booking_data[customer_id]", config.account.customer_id)
-                                      .queryParam("booking_data[customer_company_name]", config.account.customer_company_name)
-                                      .queryParam("booking_data[customer_name]", config.account.customer_name)
-                                      .queryParam("booking_data[customer_email]", config.account.customer_email)
-                                      .queryParam("confirm", String.valueOf(1))
-                                      .build().encode().toUri();
+            .queryParam("action", "regist")
+            .queryParam("booking_data[calendar_id]", config.setups.service_id + "." + config.setups.service_menu_id + ".." + String.valueOf(start_unixtime) + "." + String.valueOf(start_unixtime + 1800))
+            .queryParam("booking_data[service_id]", config.setups.service_id)
+            .queryParam("booking_data[service_menu_id]", config.setups.service_menu_id)
+            .queryParam("booking_data[start_unixtime]", String.valueOf(start_unixtime))
+            .queryParam("booking_data[end_unixtime]", String.valueOf(start_unixtime + 1800))
+            .queryParam("booking_data[num]", String.valueOf(1))
+            .queryParam("booking_data[customer_id]", config.account.customer_id)
+            .queryParam("booking_data[customer_company_name]", config.account.customer_company_name)
+            .queryParam("booking_data[customer_name]", config.account.customer_name)
+            .queryParam("booking_data[customer_email]", config.account.customer_email)
+            .queryParam("confirm", String.valueOf(1))
+            .build().encode().toUri();
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set("Accept", "*/*");
@@ -326,26 +338,36 @@ public class JobBatch {
         requestHeaders.set("Cookie", cookie);
 
         HttpEntity<Void> requestEntity = new HttpEntity<Void>(requestHeaders);
-        ResponseEntity<String> responseEntity = new RestTemplate().exchange(uri, HttpMethod.POST, requestEntity, String.class);
+        try {
+            ResponseEntity<String> responseEntity = new RestTemplate().exchange(uri, HttpMethod.POST, requestEntity, String.class);
 
-        String responseBody = "";
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            responseBody = responseEntity.getBody();
-        } else {
-            System.out.println(String.format("Error HTTP status. (%s)", responseEntity.getStatusCode().toString()));
+            String responseBody = "";
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                responseBody = responseEntity.getBody();
+            } else {
+                System.out.println(String.format("Error HTTP status. (%s)", responseEntity.getStatusCode().toString()));
+                System.out.println("[accountLogin]End");
+                return 1;
+            }
+
+            System.out.println(responseBody);
+            System.out.println("[bookingRequest]End");
+            return 0;
+        } catch (ResourceAccessException ex) {
+            System.out.println("Error server access.");
+            System.out.println("[accountLogin]End");
+            return 1;
+        } catch (UnknownHttpStatusCodeException ex) {
+            System.out.println("Unknown HTTP status code.");
             System.out.println("[accountLogin]End");
             return 1;
         }
-
-        System.out.println(responseBody);
-        System.out.println("[bookingRequest]End");
-        return 0;
     }
 
     private int bookingList() {
         System.out.println("[bookingList]Begin");
         URI uri = UriComponentsBuilder.fromUriString("https://gmoyours.dt-r.com/customer/reservation/ajaxViewList.php")
-                                      .build().encode().toUri();
+            .build().encode().toUri();
 
         HttpHeaders requestHeaders = new HttpHeaders();
         requestHeaders.set("Accept", "*/*");
@@ -353,20 +375,30 @@ public class JobBatch {
         requestHeaders.set("Cookie", cookie);
 
         HttpEntity<Void> requestEntity = new HttpEntity<Void>(requestHeaders);
-        ResponseEntity<String> responseEntity = new RestTemplate().exchange(uri, HttpMethod.GET, requestEntity, String.class);
+        try {
+            ResponseEntity<String> responseEntity = new RestTemplate().exchange(uri, HttpMethod.GET, requestEntity, String.class);
 
-        String responseBody = "";
-        if (responseEntity.getStatusCode().is2xxSuccessful()) {
-            responseBody = responseEntity.getBody();
-        } else {
-            System.out.println(String.format("Error HTTP status. (%s)", responseEntity.getStatusCode().toString()));
+            String responseBody = "";
+            if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                responseBody = responseEntity.getBody();
+            } else {
+                System.out.println(String.format("Error HTTP status. (%s)", responseEntity.getStatusCode().toString()));
+                System.out.println("[bookingList]End");
+                return 1;
+            }
+
+            System.out.println(responseBody);
             System.out.println("[bookingList]End");
+            return 0;
+        } catch (ResourceAccessException ex) {
+            System.out.println("Error server access.");
+            System.out.println("[accountLogin]End");
+            return 1;
+        } catch (UnknownHttpStatusCodeException ex) {
+            System.out.println("Unknown HTTP status code.");
+            System.out.println("[accountLogin]End");
             return 1;
         }
-
-        System.out.println(responseBody);
-        System.out.println("[bookingList]End");
-        return 0;
     }
 
 }
