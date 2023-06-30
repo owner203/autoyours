@@ -29,6 +29,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
@@ -276,7 +277,7 @@ public class JobBatch {
 
         HttpEntity<Void> requestEntity = new HttpEntity<Void>(requestHeaders);
         try {
-            ResponseEntity<String> responseEntity = new RestTemplate().exchange(uri, HttpMethod.POST, requestEntity, String.class);
+            ResponseEntity<String> responseEntity = new RestTemplate(getClientHttpRequestFactory()).exchange(uri, HttpMethod.POST, requestEntity, String.class);
 
             HttpHeaders responseHeaders;
             String responseBody = "";
@@ -339,7 +340,7 @@ public class JobBatch {
 
         HttpEntity<Void> requestEntity = new HttpEntity<Void>(requestHeaders);
         try {
-            ResponseEntity<String> responseEntity = new RestTemplate().exchange(uri, HttpMethod.POST, requestEntity, String.class);
+            ResponseEntity<String> responseEntity = new RestTemplate(getClientHttpRequestFactory()).exchange(uri, HttpMethod.POST, requestEntity, String.class);
 
             String responseBody = "";
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
@@ -376,7 +377,7 @@ public class JobBatch {
 
         HttpEntity<Void> requestEntity = new HttpEntity<Void>(requestHeaders);
         try {
-            ResponseEntity<String> responseEntity = new RestTemplate().exchange(uri, HttpMethod.GET, requestEntity, String.class);
+            ResponseEntity<String> responseEntity = new RestTemplate(getClientHttpRequestFactory()).exchange(uri, HttpMethod.GET, requestEntity, String.class);
 
             String responseBody = "";
             if (responseEntity.getStatusCode().is2xxSuccessful()) {
@@ -399,6 +400,13 @@ public class JobBatch {
             System.out.println("[accountLogin]End");
             return 1;
         }
+    }
+
+    private SimpleClientHttpRequestFactory getClientHttpRequestFactory() {
+        SimpleClientHttpRequestFactory clientHttpRequestFactory = new SimpleClientHttpRequestFactory();
+        clientHttpRequestFactory.setConnectTimeout(10000); // connect timeout
+        clientHttpRequestFactory.setReadTimeout(20000); // read timeout
+        return clientHttpRequestFactory;
     }
 
 }
