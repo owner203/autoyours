@@ -6,7 +6,7 @@ Save your time from lunch reservation.
 
 ## Requirements
 
-JDK (for build) and/or JRE (for run) required.
+JDK (for build) and/or JRE (for run) is required.
 
 ```bash
 sudo apt update && sudo apt install -y openjdk-17-jdk-headless
@@ -16,9 +16,17 @@ echo "export JAVA_HOME=$(dirname $(dirname $(readlink -f $(which java))))" >> ~/
 source ~/.bashrc
 ```
 
+The local timezone must be set to `JST` (`UTC+9`).
+
+```bash
+sudo timedatectl set-timezone Asia/Tokyo
+```
+
 ## About config.toml
 
 You need a config.toml file exists in the current directory before running.
+
+You can get your own customer ID (`会員ID`) from the web interface while booking a menu of any locations (`東京`/`宮崎`/`仙台`).
 
 Here is an example of `東京 花子`, who is booking a menu of `セルリアン`, at `12:30-13:00 next Monday`, `12:00-12:30 next Tuesday`, `13:00-13:30 next Wednesday`, `12:15-12:45 on Tuesday in two weeks`, and `13:15-13:45 on Wednesday in two weeks`.
 
